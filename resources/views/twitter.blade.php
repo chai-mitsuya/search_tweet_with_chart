@@ -41,7 +41,14 @@
 
 　　　   {{-- コントローラーで取得した$resultをforeachで回す --}}
 
-    <div id="chart" style="width:100%; height:260px;"></div>
+    @isset($result['chart_data'])
+        {!! Form::hidden('hidden', $result['chart_data'], ['id' => 'chart_data_hidden']) !!}
+        <div id="chart" style="width:100%; height:260px;"></div>
+    @endisset
+
+    @isset($result['tweets'])
+        @php $result = $result['tweets'] @endphp
+    @endisset
         @foreach ($result as $index => $tweet)
             <div class="card mb-2">
                 <div class="card-body">

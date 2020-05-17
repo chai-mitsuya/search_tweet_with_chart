@@ -32,7 +32,8 @@ class TwitterController extends Controller
         $query = $keyword . $from_date_time . $to_date_time;
 
         // ツイートを取得する
-        $result = [];
+        $result['tweets'] = []; // 修正
+        $result['chart_data'] = []; // 修正
         $max_id = null;
 
         // 確認用
@@ -50,14 +51,14 @@ class TwitterController extends Controller
 
             if (!empty($tweets->statuses)) {
                 // レスポンスの配列に取得したツイートを追加していく
-                $result = array_merge($result,$tweets->statuses);
+                $result['tweets'] = array_merge($result['tweets'],$tweets->statuses); // 修正
                 $max_id = end($tweets->statuses)->id;
             }
 
             // 検索制限になった場合は処理を終える
             $limit = \Twitter::get('application/rate_limit_status', array('resources'=>'search'))->resources->search->{'/search/tweets'}->remaining;
             if ($limit == 0) {
-            break;
+                break;
             }
         } while (count($tweets->statuses) == 100);
 
@@ -65,11 +66,14 @@ class TwitterController extends Controller
         // dump(\Twitter::get('application/rate_limit_status', array('resources'=>'search'))->resources->search->{'/search/tweets'});
 
         // 取得したツイートの時刻を日本時間に直す
-        foreach ($result as $key => $value) {
+        foreach ($result['tweets'] as $key => $value) { // 修正
             $t = new \DateTime($value->created_at);
             $t->setTimeZone(new \DateTimeZone('Asia/Tokyo'));
             $value->created_at = date('Y-m-d H:i', strtotime((string)$t->format(\DateTime::COOKIE)));
+            array_push($result['chart_data'], $value->created_at); // 追加
         }
+
+        $result['chart_data'] = json_encode($result['chart_data']); // 追加
 
         // ViewのTwitter.blade.phpに渡す
         return view('twitter', [
