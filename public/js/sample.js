@@ -21038,7 +21038,7 @@ if ($('#chart_data_hidden').val() != null) {
   var time_unit = 'hours';
 
   if (duration_minutes <= 180) {
-    // １時間〜３時間 ５分間隔
+    // 〜３時間 ５分間隔
     time_value = 5;
     time_unit = 'minutes';
   } else if (duration_minutes <= 300) {
